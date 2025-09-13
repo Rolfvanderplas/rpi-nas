@@ -9,7 +9,7 @@ services:
       - PGID=${GROUP_ID}
       - TZ=Europe/Berlin
     volumes:
-      - ${PATH_TO_DISK}/appdata/heimdall:/config
+      - /mnt/external/appdata/heimdall:/config
     ports:
       - 80:80
       - 443:443
@@ -41,8 +41,8 @@ services:
       # WEBPASSWORD: 'set a secure password here or it will be random'
     # Volumes store your data between container upgrades
     volumes:
-      - ${PATH_TO_DISK}/appdata/pihole/config:/etc/pihole
-      - ${PATH_TO_DISK}/appdata/pihole/dnsmasq.d:/etc/dnsmasq.d
+      - /mnt/external/appdata/pihole/config:/etc/pihole
+      - /mnt/external/appdata/pihole/dnsmasq.d:/etc/dnsmasq.d
     restart: unless-stopped
 
   cloudflared: # CloudflareD Tunnel
@@ -64,11 +64,11 @@ services:
   #     - UMASK_SET=022 #optional
   #     - PLEX_CLAIM= #optional
   #   volumes:
-  #     - ${PATH_TO_DISK}/appdata/plex:/config
-  #     - ${PATH_TO_DISK}/media/tv:/tv
-  #     - ${PATH_TO_DISK}/media/movies:/movies
-  #     - ${PATH_TO_DISK}/media/music:/music
-  #     - ${PATH_TO_DISK}/appdata/plex:/transcode
+  #     - /mnt/external/appdata/plex:/config
+  #     - /mnt/external/media/tv:/tv
+  #     - /mnt/external/media/movies:/movies
+  #     - /mnt/external/media/music:/music
+  #     - /mnt/external/appdata/plex:/transcode
   #   restart: unless-stopped
 
   # cloudcmd: # UI based filemanager
@@ -88,8 +88,8 @@ services:
       - PGID=${GROUP_ID}
       - TZ=Europe/Berlin
     volumes:
-      - ${PATH_TO_DISK}/appdata/pyload:/config
-      - ${PATH_TO_DISK}/downloads:/downloads
+      - /mnt/external/appdata/pyload:/config
+      - /mnt/external/downloads:/downloads
     ports:
       - 8088:8000
       - 7227:7227 #optional
@@ -114,14 +114,14 @@ services:
   #   links:
   #     - nextcloud_postgres
   #   volumes:
-  #     - ${PATH_TO_DISK}/nextcloud:/var/www/html
+  #     - /mnt/external/nextcloud:/var/www/html
   #   restart: unless-stopped
 
   # homebridge: # Homebridge
   #   image: homebridge/homebridge:latest
   #   network_mode: host
   #   volumes:
-  #     - ${PATH_TO_DISK}/appdata/homebridge:/homebridge
+  #     - /mnt/external/appdata/homebridge:/homebridge
   #   logging:
   #     driver: json-file
   #     options:
@@ -136,7 +136,7 @@ services:
       - 8888:80
       - 8443:443
     volumes:
-      - ${PATH_TO_DISK}/appdata/deconz:/opt/deCONZ
+      - /mnt/external/appdata/deconz:/opt/deCONZ
     devices:
       - /dev/ttyUSB0 # USB device for Conbee II
     environment:
@@ -155,7 +155,7 @@ services:
     environment:
       - TZ=Europe/Berlin
     volumes:
-      - ${PATH_TO_DISK}/appdata/homeassistant:/config
+      - /mnt/external/appdata/homeassistant:/config
     ports:
       - 8123:8123
     restart: unless-stopped
@@ -170,7 +170,7 @@ services:
     networks:
       - influxdb
     volumes:
-      - ${PATH_TO_DISK}/appdata/monitoring/telegraf:/etc/telegraf
+      - /mnt/external/appdata/monitoring/telegraf:/etc/telegraf
     restart: always
 
   influxdb:
@@ -195,7 +195,7 @@ services:
       - GF_INSTALL_PLUGINS=grafana-piechart-panel
     volumes:
       - grafana-storage:/var/lib/grafana
-      - ${PATH_TO_DISK}/appdata/monitoring/grafana:/etc/grafana/provisioning
+      - /mnt/external/appdata/monitoring/grafana:/etc/grafana/provisioning
     restart: unless-stopped
     
   # speedtest:
