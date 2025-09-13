@@ -1,22 +1,34 @@
 #!/bin/bash
+# Partition, format, mount, and prepare folders
 
-# Disk device to partition (adjust as needed)
 DISK="/dev/sda"
 
-# Create a new MSDOS partition table
-sudo parted --script $DISK mklabel msdos
+echo ">>> WARNING: This will ERASE all data on $DISK"
+read -p "Type YES to continue: " confirm
+[ "$confirm" != "YES" ] && { echo "Aborted."; exit 1; }
 
-# Create first partition from 0% to 50%
-sudo parted --script $DISK mkpart primary ext4 0% 50%
+# Unmount any existing partitions
+sudo umount ${DISK}? 2>/dev/null
 
-# Create second partition from 50% to 100%
-sudo parted --script $DISK mkpart primary ext4 50% 100%
+# Partition the disk
+sudo parted --script "$DISK" mklabel msdos
+sudo parted --script "$DISK" mkpart primary ext4 0% 100%
 
-# Inform user partitions created
-echo "Two equal partitions created on $DISK"
+# Format
+sudo mkfs.ext4 -F ${DISK}1
 
-# Format the partitions with ext4 filesystem (adjust partition names if needed)
-sudo mkfs.ext4 ${DISK}1
-sudo mkfs.ext4 ${DISK}2
+# Create and mount
+sudo mkdir -p /mnt/external
+sudo mount ${DISK}1 /mnt/external
 
-echo "Partitions formatted with ext4."
+# Make mount persistent
+UUID=$(sudo blkid -s UUID -o value ${DISK}1)
+grep -q "$UUID" /etc/fstab || \
+  echo "UUID=$UUID /mnt/external ext4 defaults 0 2" | sudo tee -a /etc/fstab
+
+# Prepare appdata dirs
+sudo mkdir -p /mnt/external/appdata
+sudo chown -R 1000:1000 /mnt/external/appdata
+sudo chmod -R 755 /mnt/external/appdata
+
+echo ">>> Disk ready and mounted at /mnt/external"
