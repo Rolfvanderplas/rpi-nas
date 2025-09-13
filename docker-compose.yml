@@ -5,8 +5,8 @@ services:
     image: linuxserver/heimdall
     container_name: heimdall
     environment:
-      - PUID=${USER_ID}
-      - PGID=${GROUP_ID}
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Berlin
     volumes:
       - /mnt/external/appdata/heimdall:/config
@@ -84,8 +84,8 @@ services:
     image: linuxserver/pyload
     container_name: pyload
     environment:
-      - PUID=${USER_ID}
-      - PGID=${GROUP_ID}
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Berlin
     volumes:
       - /mnt/external/appdata/pyload:/config
