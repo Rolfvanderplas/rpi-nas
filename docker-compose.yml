@@ -129,36 +129,36 @@ services:
   #       max-file: "1"
   #   restart: unless-stopped
 
-  deconz: # deCONZ
-    image: deconzcommunity/deconz
-    container_name: deconz
-    ports: 
-      - 8888:80
-      - 8443:443
-    volumes:
-      - /mnt/external/appdata/deconz:/opt/deCONZ
-    devices:
-      - /dev/ttyUSB0 # USB device for Conbee II
-    environment:
-      - DECONZ_WEB_PORT=8888
-      - DECONZ_WS_PORT=8443
-      - DEBUG_INFO=1
-      - DEBUG_APS=0
-      - DEBUG_ZCL=0
-      - DEBUG_ZDP=0
-      - DEBUG_OTA=0  
-    restart: unless-stopped
+  # deconz: # deCONZ
+  #   image: deconzcommunity/deconz
+  #   container_name: deconz
+  #   ports: 
+  #     - 8888:80
+  #     - 8443:443
+  #   volumes:
+  #     - /mnt/external/appdata/deconz:/opt/deCONZ
+  #   devices:
+  #     - /dev/ttyUSB0 # USB device for Conbee II
+  #   environment:
+  #     - DECONZ_WEB_PORT=8888
+  #     - DECONZ_WS_PORT=8443
+  #     - DEBUG_INFO=1
+  #     - DEBUG_APS=0
+  #     - DEBUG_ZCL=0
+  #     - DEBUG_ZDP=0
+  #     - DEBUG_OTA=0  
+  #   restart: unless-stopped
 
-  homeassistant: # homeassistant
-    image: homeassistant/raspberrypi5-homeassistant:stable
-    container_name: home-assistant
-    environment:
-      - TZ=Europe/Berlin
-    volumes:
-      - /mnt/external/appdata/homeassistant:/config
-    ports:
-      - 8123:8123
-    restart: unless-stopped
+  # homeassistant: # homeassistant
+  #   image: homeassistant/raspberrypi5-homeassistant:stable
+  #   container_name: home-assistant
+  #   environment:
+  #     - TZ=Europe/Berlin
+  #   volumes:
+  #     - /mnt/external/appdata/homeassistant:/config
+  #   ports:
+  #     - 8123:8123
+  #   restart: unless-stopped
 
   ## Monitoring Stack:
   telegraf:
