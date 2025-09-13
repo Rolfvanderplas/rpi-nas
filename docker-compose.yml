@@ -43,6 +43,8 @@ services:
     volumes:
       - /mnt/external/appdata/pihole/config:/etc/pihole
       - /mnt/external/appdata/pihole/dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - CHOWN
     restart: unless-stopped
 
   cloudflared: # CloudflareD Tunnel
