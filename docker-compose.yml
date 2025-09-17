@@ -1,7 +1,8 @@
-version: "3" # can be adapapted if necessary
+version: "3"
 
 services:
-  heimdall: # Dashboard for all you Apps
+  ## Dashboards & Management
+  heimdall:
     image: linuxserver/heimdall
     container_name: heimdall
     environment:
@@ -15,19 +16,20 @@ services:
       - 443:443
     restart: unless-stopped
 
-  portainer: # UI based management of Docker
+  portainer:
     image: portainer/portainer-ce
     container_name: portainer
     command: -H unix:///var/run/docker.sock
-    restart: unless-stopped
     ports:
       - 9000:9000
       - 8000:8000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+    restart: unless-stopped
 
-  pihole: # Pi-hole
+  ## Network / DNS
+  pihole:
     container_name: pihole
     image: pihole/pihole:latest
     ports:
@@ -36,10 +38,8 @@ services:
       - "8080:80/tcp"
     environment:
       TZ: 'Europe/Berlin'
-      DNSMASQ_LISTENING: 'all' # set this to all if pihole will only be accessible within your local network (non internet facing). https://github.com/pi-hole/docker-pi-hole?tab=readme-ov-file#optional-variables
-      QUERY_LOGGING: 'false' # Disable Query logging. https://github.com/pi-hole/docker-pi-hole?tab=readme-ov-file#optional-variables
-      # WEBPASSWORD: 'set a secure password here or it will be random'
-    # Volumes store your data between container upgrades
+      DNSMASQ_LISTENING: 'all'
+      QUERY_LOGGING: 'false'
     volumes:
       - /mnt/external/appdata/pihole/config:/etc/pihole
       - /mnt/external/appdata/pihole/dnsmasq.d:/etc/dnsmasq.d
@@ -47,7 +47,7 @@ services:
       - CHOWN
     restart: unless-stopped
 
-  cloudflared: # CloudflareD Tunnel
+  cloudflared:
     container_name: cloudflared
     image: cloudflare/cloudflared
     command: tunnel --no-autoupdate run
@@ -55,34 +55,8 @@ services:
       - TUNNEL_TOKEN=
     restart: unless-stopped
 
-  # plex: # Plex Media Server
-  #   image: linuxserver/plex
-  #   container_name: plex
-  #   network_mode: host
-  #   environment:
-  #     - PUID=${USER_ID}
-  #     - PGID=${GROUP_ID}
-  #     - VERSION=docker
-  #     - UMASK_SET=022 #optional
-  #     - PLEX_CLAIM= #optional
-  #   volumes:
-  #     - /mnt/external/appdata/plex:/config
-  #     - /mnt/external/media/tv:/tv
-  #     - /mnt/external/media/movies:/movies
-  #     - /mnt/external/media/music:/music
-  #     - /mnt/external/appdata/plex:/transcode
-  #   restart: unless-stopped
-
-  # cloudcmd: # UI based filemanager
-  #   image: coderaiser/cloudcmd:latest-alpine
-  #   container_name: cloudcmd
-  #   ports:
-  #     - 8008:8000
-  #   volumes:
-  #     - ~:/root
-  #     - /:/mnt/fs
-
-  pyload: # pyload - download manager for your NAS
+  ## Downloads
+  pyload:
     image: linuxserver/pyload
     container_name: pyload
     environment:
@@ -94,75 +68,102 @@ services:
       - /mnt/external/downloads:/downloads
     ports:
       - 8088:8000
-      - 7227:7227 #optional
+      - 7227:7227
     restart: unless-stopped
 
-  # nextcloud_postgres: # DB for Nextcloud
-  #   image: postgres
-  #   container_name: nextcloud_postgres
-  #   restart: always
-  #   volumes:
-  #     - nextcloud_postgres:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_PASSWORD=
-  #     - POSTGRES_DATABASE=nextcloud
-  #     - POSTGRES_USER=nextcloud
-
-  # nextcloud: # Nextcloud
-  #   image: nextcloud
-  #   container_name: nextcloud
-  #   ports:
-  #     - 8081:80
-  #   links:
-  #     - nextcloud_postgres
-  #   volumes:
-  #     - /mnt/external/nextcloud:/var/www/html
-  #   restart: unless-stopped
-
-  # homebridge: # Homebridge
-  #   image: homebridge/homebridge:latest
-  #   network_mode: host
-  #   volumes:
-  #     - /mnt/external/appdata/homebridge:/homebridge
-  #   logging:
-  #     driver: json-file
-  #     options:
-  #       max-size: "10mb"
-  #       max-file: "1"
-  #   restart: unless-stopped
-
-  # deconz: # deCONZ
-  #   image: deconzcommunity/deconz
-  #   container_name: deconz
-  #   ports: 
-  #     - 8888:80
-  #     - 8443:443
-  #   volumes:
-  #     - /mnt/external/appdata/deconz:/opt/deCONZ
-  #   devices:
-  #     - /dev/ttyUSB0 # USB device for Conbee II
-  #   environment:
-  #     - DECONZ_WEB_PORT=8888
-  #     - DECONZ_WS_PORT=8443
-  #     - DEBUG_INFO=1
-  #     - DEBUG_APS=0
-  #     - DEBUG_ZCL=0
-  #     - DEBUG_ZDP=0
-  #     - DEBUG_OTA=0  
-  #   restart: unless-stopped
-
-  homeassistant: # homeassistant
+  ## Home Assistant + add-ons
+  homeassistant:
     image: ghcr.io/home-assistant/raspberrypi5-64-homeassistant
     container_name: home-assistant
     environment:
       - TZ=Europe/Berlin
     volumes:
       - /mnt/external/appdata/homeassistant:/config
-    ports:
-      - 8123:8123
+    network_mode: host
     restart: unless-stopped
 
-  ## Monitoring Stack:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    volumes:
+      - /mnt/external/appdata/mosquitto/config:/mosquitto/config
+      - /mnt/external/appdata/mosquitto/data:/mosquitto/data
+      - /mnt/external/appdata/mosquitto/log:/mosquitto/log
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    restart: unless-stopped
+
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt:latest
+    container_name: zigbee2mqtt
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"   # update path
+    volumes:
+      - /mnt/external/appdata/zigbee2mqtt:/app/data
+    ports:
+      - "8085:8080"
+    restart: unless-stopped
+
+  esphome:
+    image: esphome/esphome:latest
+    container_name: esphome
+    volumes:
+      - /mnt/external/appdata/esphome:/config
+    ports:
+      - "6052:6052"
+    restart: unless-stopped
+
+  samba:
+    image: dperson/samba
+    container_name: samba
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - /mnt/external:/mount
+    ports:
+      - "139:139"
+      - "445:445"
+    restart: unless-stopped
+
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - /mnt/external/appdata/wireguard:/config
+    ports:
+      - "51820:51820/udp"
+    restart: unless-stopped
+
+  # music_assistant:
+  #   image: ghcr.io/music-assistant/server:latest
+  #   container_name: music_assistant
+  #   volumes:
+  #     - /mnt/external/appdata/music_assistant:/data
+  #   ports:
+  #     - "8095:8095"
+  #   restart: unless-stopped
+
+  # vlc:
+  #   image: linuxserver/vlc
+  #   container_name: vlc
+  #   network_mode: host
+  #   restart: unless-stopped
+
+  spotify_connect:
+    image: spocon/spocon:latest
+    container_name: spotify_connect
+    network_mode: host
+    restart: unless-stopped
+
+  ## Monitoring stack
   telegraf:
     image: telegraf:latest
     container_name: telegraf
@@ -199,22 +200,9 @@ services:
       - grafana-storage:/var/lib/grafana
       - /mnt/external/appdata/monitoring/grafana:/etc/grafana/provisioning
     restart: unless-stopped
-    
-  # speedtest:
-  #   image: kjake/internet-speedtest-docker:speedtest
-  #   container_name: speedtest
-  #   depends_on:
-  #     - influxdb
-  #   networks:
-  #     - influxdb
-  #   environment:
-  #     - TEST_INTERVAL=3600
-  #   restart: unless-stopped
 
 volumes:
   portainer_data:
-  # nextcloud_postgres:
-  # nextcloud:
   grafana-storage:
   influxdb-storage:
 
