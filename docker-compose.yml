@@ -101,7 +101,7 @@ services:
     image: koenkk/zigbee2mqtt:latest
     container_name: zigbee2mqtt
     devices:
-      - "/dev/ttyUSB0:/dev/ttyUSB0"   # update path
+      - "/dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2669178-if00:/dev/ttyACM0"
     volumes:
       - /mnt/external/appdata/zigbee2mqtt:/app/data
     ports:
