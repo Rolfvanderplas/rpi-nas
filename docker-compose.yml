@@ -151,16 +151,16 @@ services:
   #     - DEBUG_OTA=0  
   #   restart: unless-stopped
 
-  # homeassistant: # homeassistant
-  #   image: homeassistant/raspberrypi5-homeassistant:stable
-  #   container_name: home-assistant
-  #   environment:
-  #     - TZ=Europe/Berlin
-  #   volumes:
-  #     - /mnt/external/appdata/homeassistant:/config
-  #   ports:
-  #     - 8123:8123
-  #   restart: unless-stopped
+  homeassistant: # homeassistant
+    image: homeassistant/raspberrypi5-homeassistant:stable
+    container_name: home-assistant
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - /mnt/external/appdata/homeassistant:/config
+    ports:
+      - 8123:8123
+    restart: unless-stopped
 
   ## Monitoring Stack:
   telegraf:
