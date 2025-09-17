@@ -152,7 +152,7 @@ services:
   #   restart: unless-stopped
 
   homeassistant: # homeassistant
-    image: homeassistant/raspberrypi5-homeassistant:stable
+    image: ghcr.io/home-assistant/raspberrypi5-64-homeassistant
     container_name: home-assistant
     environment:
       - TZ=Europe/Berlin
