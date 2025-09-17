@@ -85,6 +85,9 @@ services:
   mosquitto:
     image: eclipse-mosquitto:latest
     container_name: mosquitto
+    environment:
+      - PUID=1000
+      - PGID=1000
     volumes:
       - /mnt/external/appdata/mosquitto/config:/mosquitto/config
       - /mnt/external/appdata/mosquitto/data:/mosquitto/data
