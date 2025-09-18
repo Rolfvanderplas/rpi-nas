@@ -28,7 +28,7 @@ services:
       - portainer_data:/data
     restart: unless-stopped
 
-  ## Network / DNS
+  ## Network / DNS - Deployed
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
