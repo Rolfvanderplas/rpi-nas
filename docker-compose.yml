@@ -30,10 +30,13 @@ services:
   pihole: # Pi-hole
     container_name: pihole
     image: pihole/pihole:latest
+    cap_add:
+      - NET_ADMIN          # <-- needed for DHCP
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "8080:80/tcp"
+      - "67:67/udp"        # <-- DHCP port
+      - "80:80/tcp"
     environment:
       TZ: 'Europe/Berlin'
       DNSMASQ_LISTENING: 'all' # set this to all if pihole will only be accessible within your local network (non internet facing). https://github.com/pi-hole/docker-pi-hole?tab=readme-ov-file#optional-variables
