@@ -32,7 +32,7 @@ services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    network_mode: bridge
+    network_mode: host
     cap_add:
       - NET_ADMIN      # needed for DHCP/DNS
       - CHOWN          # (optional) if you really need it
