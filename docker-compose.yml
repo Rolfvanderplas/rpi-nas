@@ -32,10 +32,14 @@ services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
+    network_mode: bridge
+    cap_add:
+      - NET_ADMIN           # <<— important
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "8080:80/tcp"
+      - "67:67/udp"         # DHCP
+      - "80:80/tcp"
     environment:
       TZ: 'Europe/Berlin'
       DNSMASQ_LISTENING: 'all'
