@@ -94,7 +94,7 @@ services:
     restart: unless-stopped
 
   zigbee2mqtt:
-    image: koenkk/zigbee2mqtt:latest
+    image: koenkk/zigbee2mqtt:1.39.0
     container_name: zigbee2mqtt
     devices:
       - "/dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2669178-if00:/dev/ttyACM0"
